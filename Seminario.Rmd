@@ -1,0 +1,459 @@
+---
+title: "Seminario R"
+date: "Junio 2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+# Instalación
+Cómo descargar R y RStudio. 
+Para descargar el programa R ir a:
+(http://cran.r-project.org/bin/windows/base/)
+
+Luego descarga R Studio desde:
+(http://www.rstudio.com/products/rstudio/download/)
+Buscar la Opción para Windows, Linux o Mac, según corresponda.
+**Apariencia:**
+
+# Tipo de datos
+## Datos más comunes
+Los tipos de datos de uso más común en R son los siguientes.
+
+Tipo            | Ejemplo | Nombre en inglés
+-----           | -----   |----
+Entero          | 1       | integer
+Numérico        | 1.3     | numeric
+Cadena de texto | "uno"   | character
+Factor          | uno     | factor
+Lógico          | TRUE    | logical
+Perdido         | `NA`    | NA
+Vacío           | `NULL`  | null
+
+La diferencia entre las dos es que un dato `NULL` aparece sólo cuando R intenta recuperar un dato y no encuentra nada, mientras que `NA` es usado para representar de modo explícito datos perdidos, omitidos o que por alguna razón son faltantes.
+
+# Estructura de datos
+* **Vector:** Un conjunto lineal de datos (pesos, presiones, etc)
+* **Matrix:** Una tabla con solo números
+* **Data Frame:** Una tabla donde cada columna tiene un tipo de datos.
+* **List:** se arma con cualquier tipo de dados.
+
+![](C:/Users/Usuario/Desktop/seminario R/Data.png){width=500 height=300}
+
+
+### Crear un vector
+```{r, echo=TRUE, eval=FALSE}
+# Vector numérico
+c(1, 2, 3, 5, 8, 13)
+
+# Vector de cadena de texto
+c("arbol", "casa", "persona")
+
+a<- seq(1,100, by=5)
+#para subsetear un vector usamos []
+a[3]
+a[-3]
+a[c(2,10,15)]
+```
+### Crear una matriz
+Creamos matrices en R con la función `matrix()`. La función `matrix()` acepta dos argumentos, `nrow` y `ncol`. Con ellos especificamos el número de renglones y columnas que tendrá nuestra matriz.
+```{rr, echo=TRUE, eval=FALSE}
+# Un vector numérico del uno al doce
+1:12
+
+# matrix() sin especificar renglones ni columnas
+matrix(1:12)
+
+# Tres renglones y cuatro columnas
+matrix(1:12, nrow = 3, ncol = 4)
+
+# Cuatro columnas y tres columnas
+matrix(1:12, nrow = 4, ncol = 3)
+
+# Dos renglones y seis columnas
+matrix(1:12, nrow = 4, ncol = 3)
+# subsetear una matriz [r,c]
+
+```
+
+### Crear un data frame
+Para crear un data frame usamos la función `data.frame()`. Esta función nos pedirá un número de vectores igual al número de columnas que deseemos. Todos los vectores que proporcionemos deben tener el mismo largo.
+```{r, echo=TRUE, eval=FALSE}
+mi_df <- data.frame("entero" = 1:4, "factor" = c("a", "b", "c", "d"), "numero" = c(1.2, 3.4, 4.5, 5.6),"cadena" = as.character(c("a", "b", "c", "d")))
+
+mi_df
+
+# Podemos usar dim() en un data frame
+dim(mi_df)
+
+# El largo de un data frame es igual a su número de columnas
+length(mi_df)
+
+# names() nos permite ver los nombres de las columnas
+names(mi_df)
+
+# La clase de un data frame es data.frame
+class(mi_df) 
+```
+
+# Importar y exportar datos
+Con R podemos trabajar con datos ya existentes en R *base* o que hemos generado nosotros mismos, sin embargo, lo usual es que usemos datos almacenados en archivos fuera de R.
+
+R puede importar datos de una amplia variedad de tipos de archivo con las funciones de *base* y además esta capacidad puede ampliarse con el uso de paquetes específicos.
+
+Cuando importamos un archivo, estamos guardando su contenido en nuestra sesión como un objeto. Dependiendo del procedimiento que usemos será el tipo de objeto creado.
+
+De manera análoga, podemos exportar nuestros objetos de R a archivos en nuestra computadora.
+
+## Descarga de datos
+Podemos descargar archivos de internet usando R con la función `download.file()`.
+
+La función `download.file()` nos pide como argumento `url`, la dirección de internet del archivo que queremos descargar y `destfile` el nombre que tendrá el archivo en nuestra computadora. Ambos argumentos como cadenas de texto, es decir, entre comillas.
+
+Por ejemplo, para descargar una copia del set *iris* disponible en el [*UCI Machine Learning Repository*](https://archive.ics.uci.edu) usamos la siguiente dirección como argumento `url`:
+
+* https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
+
+Y asignamos "iris.data" al argumento `dest`.
+```{r descarga iris, echo=TRUE, eval=FALSE}
+download.file(url = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data", destfile = "iris.data")
+getwd()
+setwd("C:/Users/Usuario/Desktop/seminario R")
+```
+
+## Tablas (datos rectangulares)
+La estructura rectangular, en renglones y columnas, es común y conveniente para el análisis de datos. Esta forma de organizar los datos se conoce como **tabla**.
+
+R cuenta con la función genérica `read.table()`, que puede leer cualquier tipo de archivo que contenga una tabla. 
+
+La condición para que R interprete un archivo como una tabla es que tenga renglones y en cada renglón, los datos estén separados por comas, o algún otro carácter, indicando columnas. Es decir, algo que luzca de la siguiente manera.
+
+>1, 20,  8, 5
+
+
+Por supuesto, en lugar de comas podemos tener puntos y coma, dos puntos, tabuladores o cualquier otro signo de puntuación como **separador** de columnas.
+
+La función `read.table()` acepta un número considerable de argumentos. Los más importantes son los siguientes.
+
+* `file`: La ruta del archivo que importaremos, como cadena de texto. Si el archivo se encuentra en nuestro [directorio de trabajo](##directorio-de-trabajo), es suficiente dar el nombre del archivo, sin la ruta completa.
+* `header`: Si nuestro archivo tiene encabezados, para ser interpretados como nombres de columna, definimos este argumento como `TRUE`.
+* `sep`: El carácter que es usado como separador de columnas. Por defecto es ";".
+* `col.names`: Un vector opcional, de tipo carácter, con los nombres de las columnas en la tabla.
+* `stringsAsFactors`: Esta función convierte automáticamente los datos de texto a factores. Si este no es el comportamiento que deseamos, definimos este argumento como `FALSE`.
+
+```{r iris, echo=TRUE, eval=FALSE}
+getwd()
+read.table("C:/Users/Usuario/Desktop/seminario R/iris.data")
+iris<-read.table("C:/Users/Usuario/Desktop/seminario R/iris.data",header=TRUE, sep=",")
+#View(iris)
+iris<-read.table("C:/Users/Usuario/Desktop/seminario R/iris.data", header=FALSE, sep=",")
+#View(iris)
+#podemos ver los primeros renglones nuestros datos usando la función `head()` 
+head(iris)
+#como no tienen nombres podemos asignarlos creando un vector
+nombres<- c("largo Sépalo", "ancho Sépalo", "largo Pétalo", "ancho Pétalo", "Variedad")
+
+class(iris)
+
+```
+
+### Archivos CSV
+Un caso particular de las tablas, son los archivos separados por comas, con extensión **.csv**, *Comma Separated Values*. Este es un tipo de archivo comúnmente usado para compartir datos, pues es compatible con una amplia variedad de sistemas diferentes y ocupa relativamente poco espacio de almacenamiento.
+
+Este tipo de archivos también se pueden importar usando la función `read.table()`.
+
+Probemos descargando los mismos datos que en el ejemplo anterior, pero almacenados en un archivo con extensión **.csv**.
+
+Probemos descargar la base **iris** pero ahora la guardamos con extensión **.csv**
+
+```{r, echo=TRUE, eval=FALSE}
+download.file(url = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data", destfile = "iris.data2.csv")
+#podemos usar read.table
+iris<-read.table("iris.data2.csv", header=FALSE, sep=",", col.names=nombres)
+```
+
+Una ventaja de usar documentos con extensión **.csv** es la posibilidad de usar la función `read.csv()`. Esta es una es una versión de `read.table()`, optimizada para importar archivos **.csv**.
+
+`read.csv()` acepta los mismos argumentos que `read.table()`, pero al usarla con un archivo **.csv**, en casi todo los casos, no hará falta especificar nada salvo la ruta del archivo.
+
+```{r, echo=TRUE, eval=FALSE}
+iris <- read.csv("iris.data.csv")
+#le agregamos el vector con los nombres
+iris <- read.csv("iris.data.csv", col.names=nombres)
+View(iris)
+```
+
+## Archivos con una estructura desconocida
+Habrá ocasiones en las que no estamos seguros del contenido de los archivos que deseamos importar. En estos casos, podemos pedirle a R que intente abrir el archivo en cuestión, usando la función `file.show()`.
+
+Por ejemplo, intentamos abrir el archivo con extensión **.csv** que importamos antes.
+```{r fileshow bc csv, echo=TRUE, eval=FALSE}
+file.show("iris.data.csv")
+```
+
+## Exportar datos
+Un paso muy importante en el trabajo con R es exportar los datos que hemos generado. Puede ocurrir que necesitemos compartir una base de las que están almacenadas en R.
+Por ejemplo, iris es una base que ya se encuentra almacenada en R y podemos querer llevarla a otro formato para compartiral o editarla...
+
+De manera análoga a `read.table()`, la función `write.table()` nos permite exportar matrices o data frames, como archivos de texto con distintas extensiones.
+
+Los argumentos más usados de `write.table()` son los siguientes.
+
+* `x`:  El nombre del data frame o matriz a exportar.
+* `file`: El nombre, extensión y ruta del archivo creado con esta función. Si sólo escribimos el nombre del archivo, este será creado en nuestro directorio de trabajo.
+* `sep`: El carácter que se usará como separador de columnas.
+* `row.names`: Si deseamos incluir el nombre de los renglones en nuestro objeto al exportarlo, establecemos este argumento como `TRUE`. En general, es recomendable fijarlo como `FALSE`, para conservar una estructura tabular más fácil de leer.
+* `col.names`: Si deseamos que el archivo incluya los nombres de las columnas en nuestro objeto, establecemos este argumento como `TRUE`. Es recomendable fijarlo como `TRUE` para evitar la necesidad de almacenar los nombres de columna en documentos distintos.
+
+Probamos cargando la base iris de R y exportándola a otro formado
+```{r write.table1, echo=TRUE, eval=FALSE}
+data(iris)
+write.table(x = iris, file = "iris.txt", sep = ",", row.names = FALSE, col.names = TRUE)
+
+#tambien podemos guardarlo como .csv o .xls 
+write.table(x = iris, file = "iris.csv", sep = ",", row.names = FALSE, col.names = TRUE)
+
+#Ahora probemos cargarlo nuevamente pero usando el comando file->import Dataset
+
+#podemos necesitar un paquete adicional
+install.packages("readxl")
+library(readxl)
+```
+
+# Medidas descriptivas
+Usamos la base iris para visualizar algunos resultados
+
+```{r summary, echo=TRUE, eval=FALSE}
+data(iris)
+str(iris)
+summary(iris)
+summary(iris$Sepal.Length)
+attach(iris)
+#ver este comando
+summary(Petal.Length~Species$setosa)
+
+#usamos el comando tapply para analizar algunos descriptivos por especie
+tapply(Petal.Length,Species,summary)
+tapply(Petal.Width,Species,summary)
+tapply(Sepal.Length,Species,summary)
+tapply(Sepal.Width,Species,summary)
+
+#tambien se puede usar la funcion by
+by(iris, iris$Species, summary)
+
+```
+
+# Gráficos
+### La función plot()
+En R, la función `plot()` es usada de manera general para crear gráficos.
+
+Esta función tiene un comportamiento especial, pues dependiendo del tipo de dato que le demos como argumento, generará diferentes tipos de gráfica. Además, para cada tipo de gráfico, podremos ajustar diferentes parámetros que controlan su aspecto, dentro de esta misma función.
+
+`plot()` siempre pide un argumento `x`, que corresponde al **eje X** de una gráfica. `x` requiere un vector y si no especificamos este argumento, obtendremos un error y no se creará una gráfica.
+
+El resto de los argumentos de `plot()` son opcionales, pero el más importante es `y`. Este argumento también requiere un vector y corresponde al **eje Y** de nuestra gráfica. 
+
+Dependiendo del tipo de dato que demos a `x` y `y` será el gráfico que obtendremos, de acuerdo a las siguientes reglas:
+
+`x`       | `y`         | Gráfico
+---       |---          |---
+Continuo  | Continuo    | Diagrama de dispersión (*Scatterplot*)
+Continuo  | Discreto    | Diagrama de dispersión, `y` coercionada a numérica
+Continuo  | Ninguno     | Diagrama de dispersión, por número de renglón
+Discreto  | Continuo    | Diagrama de caja (*Box plot*)
+Discreto  | Discreto    | Gráfico de mosaico (Diagrama de Kinneman)
+Discreto  | Ninguno     | Gráfica de barras
+Ninguno   | Cualquiera  | Error
+
+En donde los tipos de dato son:
+
+* **Continuo**: Un vector numérico, entero, lógico o complejo.
+* **Discreto**: Un vector de factores o cadenas de texto.
+
+Además de `plot()`, hay funciones que generan tipos específicos de gráfica. Por ejemplo, podemos crear una gráfica de barras con `plot()` pero existe también la función `barplot()`. También existen también casos como el de los histogramas, que sólo pueden ser creados con la función `hist()`.
+
+### Histogramas
+```{r hist_patal.Length, echo=TRUE, eval=FALSE}
+hist(x = Petal.Length)
+
+#podemos configurar las distintas partes del gráfico
+hist(x = Petal.Length, main = "Histograma largo del Pétalo", xlab = "Largo (cm)", ylab = "Frecuencia",col="red")
+```
+
+### Gráficas de barras
+
+La función `plot()` puede generar gráficos de barra si damos como argumento `x` un vector de factor o cadena de texto, sin dar un argumento `y`.
+
+```{r, echo=TRUE, eval=FALSE}
+plot(Species)
+plot(Species, main= "Distribución por especies", xlab="frec Abs", col= c("blue", "red","green"))
+```
+
+### Diagramas de dispersión
+Este tipo de gráfico es usado para mostrar la relación entre dos variables numéricas continuas, usando puntos. 
+
+Para generar un diagrama de dispersión, damos vectores numéricos como argumentos `x` e `y` a la función `plot()`.
+
+```{r scatter, echo=TRUE, eval=FALSE}
+plot(x = Petal.Length, y = Petal.Width, col=Species)
+
+
+# más completo
+plot(x = iris$Petal.Length, y = iris$Petal.Width, col = iris$Species, 
+     main = "Iris - Pétalo", xlab = "Largo", ylab = "Ancho")
+legend(x = "topleft", legend = c("Setosa", "Versicolor", "Virginica"), 
+       fill = c("black", "red", "green"), title = "Especie")
+
+```
+
+### Diagramas de caja
+
+Podemos usar a función plot
+
+```{r boxplot_plot, echo=TRUE, eval=FALSE}
+plot(x = Species, y = Petal.Length)
+plot(x = Species, y = Petal.Length, main = "Largo del Pétalo", 
+     xlab = "Especie", ylab = "Largo (cm)", 
+     col = c("orange3", "yellow3", "green3"))
+```
+
+También podemos crear diagramas de caja con la función `boxplot()`.  Esta función puede generar diagramas de caja de dos maneras distintas.
+
+En la primera manera, si damos como argumento `x` un vector numérico, nos dará un diagrama de caja de esa variable.
+
+```{r boxplot_x, echo=TRUE, eval=FALSE}
+boxplot(x = Sepal.Length)
+```
+
+En la segunda manera necesitamos dar dos argumentos:
+
+* `formula`: Para esta función las fórmulas tienen el formato `y ~ x`, donde y es el nombre de la variable continua a graficar, y la x es la variable que usaremos como agrupación.
+* `data`: Es el data frame del que serán tomadas las variables.
+
+```{r boxplot_formula, echo=TRUE, eval=FALSE}
+boxplot(formula = Sepal.Length ~ Species, data =  iris)
+```
+
+# Tidyverse
+
+```{r Tidyverse1, echo=TRUE, eval=FALSE}
+install.packages(tidyverse)
+library(tidyverse)
+```
+
+[Tidiverse](https://www.tidyverse.org/) es nueva forma de afrontar el análisis de datos en R.
+
+* Se hace uso de un grupo de paquetes que trabajan en armonía porque comparten ciertos principios, como por ejemplo, la forma de estructurar los datos.
+
+
+## dplyr
+* **[Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)**
+
+### Summarise para resumir
+
+```{r Tidyverse2, echo=TRUE, eval=FALSE}
+Resumen_Largo_Petalo <- summarise(iris, Media_Largo_Petalo = mean(Petal.Length), Mediana_Largo_Petalo = median(Petal.Length),Desviacion_Largo_Petalo = sd(Petal.Length))
+```
+
+### Group_by y Summarise 
+para resumir por grupo
+
+```{r group_by, echo=TRUE, eval=FALSE}
+Resumen_Largo_Petalo <- group_by(iris, Species)
+  
+Resumen_Largo_Petalo <- summarise(Resumen_Largo_Petalo, Media_Largo_Petalo = mean(Petal.Length), Mediana_Largo_Petalo = median(Petal.Length),Desviacion_Largo_Petalo = sd(Petal.Length))
+
+write.csv(Resumen_Largo_Petalo, "Resumen.csv")
+```
+
+### Mutate: para crear nuevas variables
+
+```{r mutate, echo=TRUE, eval=FALSE}
+DF <- mutate(iris, RazonPetaloSepalo = Sepal.Length/Petal.Length)
+
+DF <- group_by(DF, Species)
+
+DF <- summarise(DF, RazonPetaloSepalo = mean(RazonPetaloSepalo), N = n())
+```
+
+# Pipeline %>% 
+
+Crear un pipeline en rstudio: ctr +  shift + m
+
+```{r pipeline, echo=TRUE, eval=FALSE}
+x <- c(1, 4, 6, 8)
+y <- round(mean(sqrt(log(x))), 2)
+
+y <- mean(sqrt(log(x)))
+
+y <- x %>% log %>% sqrt %>% mean %>% round(3)
+
+DF <- iris %>% mutate(RazonPetaloSepalo = Sepal.Length/Petal.Length) %>% group_by(Species) %>% summarise(RazonPetaloSepalo = mean(RazonPetaloSepalo), N = n())
+```
+
+### Summarise all
+
+```{r Tidyverse6, echo=TRUE, eval=FALSE}
+Resumen <- iris %>% group_by(Species) %>% summarise_all(.funs = list(Media = mean, SD = sd))
+```
+
+### Filter
+Selecciona por alguna condición entre una o mas variables
+
+Símbolo   | Significado         | 
+---       |---                  |
+>         | Mayor que           | 
+<         | Manor que           | 
+==        | Igual a             | 
+>=        | mayor o igual a     | 
+<=        | Menor o igual a     | 
+!=        | Distinto a          | 
+%in%      | Dentro del grupo    | 
+is.na     | Es NA               | 
+!is.na    | No es NA            | 
+|&        | o, y                | 
+_____            
+
+```{r Tidyverse7, echo=TRUE, eval=FALSE}
+DF<- iris %>% filter(Species!="versicolor")
+DF <- iris %>% filter(Petal.Length > 4, Petal.Width < 2) %>% 
+  group_by(Species) %>% 
+  summarise(Media = mean(Petal.Length), N = n())
+
+
+DF <- iris %>% filter(Species == "virginica") %>% select(starts_with("Petal"))
+
+DF <- iris %>% filter(Species == "virginica") %>% select(contains("Petal"))
+
+
+DF2 <- iris[101:150,3:4]
+
+```
+
+# Algunas herramientas útiles
+## Para Aprender R
+
+*  **[swirl](https://rpubs.com/Cassandra_Carbajal/558982):** El paquete Swirl R hace que sea fácil y divertido aprender programación R y ciencia de datos.Utiliza solo la consola.
+
+```{r swirl, echo=TRUE, eval=FALSE}
+install.packages("swirl")
+library(swirl)
+
+```
+
+* **Tutorial swirl**
+
+![]https://www.youtube.com/watch?v=hcI6Ry2DuQQ)
+
+* **Tutorial R**
+
+## Para obtener códico
+
+* **GitHub**  Repositorio de código (público o privado)
+
+![](C:/Users/Usuario/Desktop/seminario R/github.png)
+
+* **stackoverflow:** Sitio de preguntas y resppuestas (mucho mas que eso) para programadores
+![](C:/Users/Usuario/Desktop/seminario R/stack.png)
+
+
+
