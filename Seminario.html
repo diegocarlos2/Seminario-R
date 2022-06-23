@@ -462,7 +462,7 @@ a[c(2,10,15)]</code></pre>
 función <code>matrix()</code> acepta dos argumentos, <code>nrow</code> y
 <code>ncol</code>. Con ellos especificamos el número de renglones y
 columnas que tendrá nuestra matriz.</p>
-<pre class="rr"><code># Un vector numérico del uno al doce
+<pre class="r"><code># Un vector numérico del uno al doce
 1:12
 
 # matrix() sin especificar renglones ni columnas
@@ -476,8 +476,7 @@ matrix(1:12, nrow = 4, ncol = 3)
 
 # Dos renglones y seis columnas
 matrix(1:12, nrow = 4, ncol = 3)
-# subsetear una matriz [r,c]
-</code></pre>
+# subsetear una matriz [r,c]</code></pre>
 </div>
 <div id="crear-un-data-frame" class="section level3">
 <h3>Crear un data frame</h3>
@@ -609,7 +608,7 @@ archivos <strong>.csv</strong>.</p>
 nada salvo la ruta del archivo.</p>
 <pre class="r"><code>iris &lt;- read.csv(&quot;iris.data.csv&quot;)
 #le agregamos el vector con los nombres
-iris &lt;- read.csv(&quot;iris.data.csv&quot;, col.names=nombres)
+iris &lt;- read.csv(&quot;iris.data2.csv&quot;,header=FALSE, col.names=nombres)
 View(iris)</code></pre>
 </div>
 </div>
@@ -621,7 +620,7 @@ intente abrir el archivo en cuestión, usando la función
 <code>file.show()</code>.</p>
 <p>Por ejemplo, intentamos abrir el archivo con extensión
 <strong>.csv</strong> que importamos antes.</p>
-<pre class="r"><code>file.show(&quot;iris.data.csv&quot;)</code></pre>
+<pre class="r"><code>file.show(&quot;iris.data2.csv&quot;)</code></pre>
 </div>
 <div id="exportar-datos" class="section level2">
 <h2>Exportar datos</h2>
@@ -675,8 +674,6 @@ str(iris)
 summary(iris)
 summary(iris$Sepal.Length)
 attach(iris)
-#ver este comando
-summary(Petal.Length~Species$setosa)
 
 #usamos el comando tapply para analizar algunos descriptivos por especie
 tapply(Petal.Length,Species,summary)
@@ -870,13 +867,11 @@ DF &lt;- summarise(DF, RazonPetaloSepalo = mean(RazonPetaloSepalo), N = n())</co
 </div>
 <div id="pipeline" class="section level1">
 <h1>Pipeline %&gt;%</h1>
-<p>Crear un pipeline en rstudio: ctr + shift + m</p>
+<p>Crear un pipeline en Rstudio: ctr + shift + m</p>
 <pre class="r"><code>x &lt;- c(1, 4, 6, 8)
 y &lt;- round(mean(sqrt(log(x))), 2)
 
-y &lt;- mean(sqrt(log(x)))
-
-y &lt;- x %&gt;% log %&gt;% sqrt %&gt;% mean %&gt;% round(3)
+y &lt;- x %&gt;% log %&gt;% sqrt %&gt;% mean %&gt;% round(4)
 
 DF &lt;- iris %&gt;% mutate(RazonPetaloSepalo = Sepal.Length/Petal.Length) %&gt;% group_by(Species) %&gt;% summarise(RazonPetaloSepalo = mean(RazonPetaloSepalo), N = n())</code></pre>
 <div id="summarise-all" class="section level3">
@@ -939,16 +934,9 @@ DF &lt;- iris %&gt;% mutate(RazonPetaloSepalo = Sepal.Length/Petal.Length) %&gt;
 <hr />
 <pre class="r"><code>DF&lt;- iris %&gt;% filter(Species!=&quot;versicolor&quot;)
 DF &lt;- iris %&gt;% filter(Petal.Length &gt; 4, Petal.Width &lt; 2) %&gt;% 
-  group_by(Species) %&gt;% 
-  summarise(Media = mean(Petal.Length), N = n())
+  group_by(Species) %&gt;% summarise(Media = mean(Petal.Length), N = n())
 
-
-DF &lt;- iris %&gt;% filter(Species == &quot;virginica&quot;) %&gt;% select(starts_with(&quot;Petal&quot;))
-
-DF &lt;- iris %&gt;% filter(Species == &quot;virginica&quot;) %&gt;% select(contains(&quot;Petal&quot;))
-
-
-DF2 &lt;- iris[101:150,3:4]</code></pre>
+DF &lt;- iris %&gt;% filter(Species == &quot;virginica&quot;) %&gt;% select(starts_with(&quot;Petal&quot;))</code></pre>
 </div>
 </div>
 <div id="algunas-herramientas-útiles" class="section level1">
